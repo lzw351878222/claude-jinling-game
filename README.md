@@ -7,14 +7,16 @@
 ## 在线试玩
 
 - **襄阳服务器**：<http://171.80.0.26:18887/>
-- **GitHub Pages**：<https://lzw351878222.github.io/cladue-game/>（需在仓库 Settings → Pages 里把来源设为 `main` 分支的 `/docs` 目录）
+- **GitHub Pages**：<https://lzw351878222.github.io/claude-jinling-game/>
 - **离线**：下载 [`docs/index.html`](docs/index.html)，双击用浏览器打开即可（电脑、手机都能玩）
 
 ## 由 Claude 开发
 
 这个游戏的玩法设计、剧情与对白、3D 场景与像素人物生成、消消乐引擎与 30 个关卡、9 个特别关小游戏、用 Web Audio 实时合成的音乐音效、60 篇「金陵志」词条的考证，以及仓库里的全部代码，都由 **Claude**（Claude Opus 5.5，在 [Claude Code](https://claude.com/claude-code) 里）编写完成。开发过程中，Claude 还把音频引擎、关卡设计与数值调校、小游戏实现等工作分派给并行的子代理，并用无头浏览器自动试玩、截图来检查效果。
 
-仓库作者提供了主角康晔的人物素材，提出需求并试玩反馈；画面里康晔的立绘、像素形象和标题图，由 Claude 从这些素材加工生成（`tools/process_assets.py`）。
+**本仓库没有一行代码是人手写的。** 仓库作者只通过对话提出需求、做决定、试玩反馈，并提供了主角康晔的人物素材；画面里康晔的立绘、像素形象和标题图，也由 Claude 从这些素材加工生成（`tools/process_assets.py`）。
+
+> **English** — *Jinling Xunzong* ("Tracing Jinling") is a match-3 + scene-restoration web game set in Ming-dynasty Nanjing, **built entirely by Claude (Claude Opus 5.5) in Claude Code** — game design, story and dialogue, a Three.js HD-2D scene engine, the match-3 engine with 30 levels, 9 mini-games, procedurally synthesized music and sound, and a 60-entry history codex. No line of code in this repository was written by hand; the human author only gave directions and feedback through chat and supplied photos of the protagonist. Play it in the browser: <https://lzw351878222.github.io/claude-jinling-game/>
 
 ## 截图
 
