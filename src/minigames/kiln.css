@@ -1,0 +1,30 @@
+/* 窑火 */
+.kiln-ui { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.kiln-btn { position: absolute; pointer-events: auto; }
+.kiln-btn.liba-btn { font-size: 30px; letter-spacing: .2em; }
+.kiln-btn .liba-btn-ic { width: 1.05em; height: 1.05em; color: #ffe2a6; }
+.kiln-btn.hot { box-shadow: 0 0 0 1px rgba(0, 0, 0, .55), inset 0 0 0 2px rgba(255, 226, 166, .6), 0 1px 0 #0b0a08, 0 0 26px rgba(255, 150, 50, .8); }
+.kiln-btn.water { background: linear-gradient(180deg, #5e86a8, #3a5f80 60%, #2b4863); }
+
+/* 周老汉的话 */
+.kiln-say {
+  position: absolute; display: flex; align-items: flex-start; gap: 9px; max-width: 440px;
+  padding: 7px 14px 8px 7px; font-family: var(--f-body); font-size: 17px; line-height: 1.4; color: var(--ink);
+  background: rgba(251, 246, 234, .95); border: 1.5px solid var(--ink-2); border-radius: 10px;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, .35), inset 0 0 0 3px rgba(200, 161, 90, .22);
+  opacity: 0; transform: translateY(-6px); transition: opacity .25s ease, transform .25s ease;
+}
+.kiln-say.show { opacity: 1; transform: none; }
+.kiln-say.pop { animation: kiln-pop .32s cubic-bezier(.2, .9, .3, 1.4); }
+.kiln-say.warn { border-color: var(--vermilion); }
+.kiln-say.warn .kiln-say-t { color: var(--vermilion-dark); }
+.kiln-say-seal {
+  flex: 0 0 auto; width: 32px; height: 32px; display: grid; place-items: center; margin-top: 1px;
+  font-family: var(--f-brush); font-size: 21px; color: #fbeee0; background: var(--vermilion); border-radius: 4px;
+  box-shadow: inset 0 0 0 2px rgba(251, 238, 224, .85), inset 0 0 0 3.5px var(--vermilion);
+}
+.kiln-say-b { display: flex; flex-direction: column; min-width: 0; }
+.kiln-say-n { font-size: 12px; color: var(--ink-3); letter-spacing: .12em; line-height: 1.2; }
+.kiln-say-t { min-height: 1.4em; }
+@keyframes kiln-pop { 0% { transform: scale(.94); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@media (max-width: 520px) { .kiln-say { font-size: 15px; } .kiln-say-seal { width: 28px; height: 28px; font-size: 18px; } }

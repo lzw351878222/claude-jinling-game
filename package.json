@@ -1,0 +1,18 @@
+{
+  "name": "jinling-xunzong",
+  "version": "1.0.0",
+  "private": true,
+  "description": "金陵寻踪 —— 以康晔为主角的明代南京 HD-2D 剧情冒险网页游戏",
+  "type": "module",
+  "scripts": {
+    "assets": "python tools/process_assets.py",
+    "build": "node build.mjs",
+    "dev": "node build.mjs --dev --serve"
+  },
+  "dependencies": {
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

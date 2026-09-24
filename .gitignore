@@ -1,0 +1,8 @@
+node_modules/
+dist/
+tools/.cache/
+# 原始人物照片不公开，游戏用到的加工图在 src/assets/
+人物素材/
+# 未使用的字体
+tools/fonts/ZhiMangXing-Regular.ttf
+*.log

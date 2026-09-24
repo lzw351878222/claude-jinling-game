@@ -1,0 +1,91 @@
+/* 验砖 / 窑火 / 捉蠹 / 经史子集 共用的小部件（前缀 liba-） */
+
+/* ---------- 大按钮 ---------- */
+.liba-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .35em;
+  min-width: 48px; min-height: 52px; padding: 6px 16px;
+  font-family: var(--f-brush); font-size: 26px; letter-spacing: .14em; line-height: 1.05;
+  color: #fbf3e2; background: var(--ink-2);
+  border: none; border-radius: 7px; cursor: pointer; outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .55), inset 0 0 0 2px rgba(232, 207, 148, .38), inset 0 10px 18px rgba(255, 255, 255, .08), 0 4px 0 #0b0a08, 0 8px 18px rgba(0, 0, 0, .28);
+  transition: transform .07s ease, box-shadow .07s ease, filter .15s ease, opacity .2s ease;
+  touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .35);
+}
+.liba-btn .liba-btn-t { position: relative; white-space: nowrap; }
+.liba-btn .liba-btn-ic { display: inline-grid; place-items: center; width: 1.1em; height: 1.1em; }
+.liba-btn .liba-btn-ic svg { width: 100%; height: 100%; overflow: visible; }
+.liba-btn.down, .liba-btn.kb {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .55), inset 0 0 0 2px rgba(232, 207, 148, .38), inset 0 10px 18px rgba(255, 255, 255, .08), 0 1px 0 #0b0a08, 0 3px 8px rgba(0, 0, 0, .22);
+  filter: brightness(1.14);
+}
+@media (hover: hover) { .liba-btn:hover { filter: brightness(1.08); } }
+.liba-btn.jade { background: linear-gradient(180deg, #4f9885, var(--jade) 60%, #336a5c); }
+.liba-btn.verm { background: linear-gradient(180deg, var(--vermilion-2), var(--vermilion) 60%, #962f25); }
+.liba-btn.ink { background: linear-gradient(180deg, #51483c, var(--ink-2) 60%, #2a251f); }
+.liba-btn.gold { background: linear-gradient(180deg, #dcb978, #b08a45 60%, var(--gold-dark)); }
+.liba-btn.off, .liba-btn[disabled] { opacity: .42; pointer-events: none; filter: saturate(.5); }
+.liba-key {
+  position: absolute; right: 5px; bottom: 3px; font-family: var(--f-ui); font-size: 10px; letter-spacing: 0;
+  line-height: 1; padding: 2px 4px; border-radius: 3px; color: rgba(251, 243, 226, .8);
+  background: rgba(0, 0, 0, .22); box-shadow: inset 0 0 0 1px rgba(251, 243, 226, .35); text-shadow: none;
+}
+
+/* ---------- 教学提示气泡 ---------- */
+.liba-hint {
+  position: absolute; z-index: 6; left: 0; top: 0; max-width: min(90%, 440px); width: max-content;
+  padding: 8px 14px 9px; font-family: var(--f-body); font-size: 17px; line-height: 1.45; color: var(--ink);
+  background: rgba(251, 246, 234, .97); border: 1.5px solid var(--ink-2); border-radius: 9px;
+  box-shadow: 0 5px 16px rgba(20, 14, 6, .28), inset 0 0 0 3px rgba(200, 161, 90, .22);
+  pointer-events: none; text-align: center;
+  animation: liba-hint-in .38s cubic-bezier(.2, .9, .3, 1.3) both;
+}
+.liba-hint b { color: var(--vermilion); font-weight: normal; }
+.liba-hint .liba-hint-k { font-family: var(--f-brush); color: var(--vermilion); }
+.liba-hint::after {
+  content: ""; position: absolute; left: calc(50% + var(--ax, 0px)); width: 12px; height: 12px; margin-left: -6px;
+  background: inherit; border: 1.5px solid var(--ink-2); display: none;
+}
+.liba-hint.arrow-down::after { display: block; bottom: -7.5px; border-top: none; border-left: none; transform: rotate(45deg); }
+.liba-hint.arrow-up::after { display: block; top: -7.5px; border-bottom: none; border-right: none; transform: rotate(45deg); }
+.liba-hint.bob { animation: liba-hint-in .38s cubic-bezier(.2, .9, .3, 1.3) both, liba-bob 1.6s ease-in-out .4s infinite; }
+.liba-hint.out, .liba-hint.bob.out { animation: liba-hint-out .3s ease both; }
+@keyframes liba-hint-in { from { opacity: 0; scale: .85; } to { opacity: 1; scale: 1; } }
+@keyframes liba-hint-out { from { opacity: 1; } to { opacity: 0; scale: .95; } }
+@keyframes liba-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
+
+/* ---------- 标题横幅（开场 / 阶段切换） ---------- */
+.liba-banner {
+  position: absolute; left: 50%; top: 42%; z-index: 7; pointer-events: none; text-align: center;
+  transform: translate(-50%, -50%); white-space: nowrap;
+  animation: liba-banner 1.7s cubic-bezier(.2, .8, .3, 1) both;
+}
+.liba-banner .liba-banner-t {
+  font-family: var(--f-brush); font-size: clamp(34px, 8vmin, 66px); letter-spacing: .16em; color: var(--ink);
+  text-shadow: 0 0 14px rgba(246, 238, 222, .95), 0 0 4px rgba(246, 238, 222, 1);
+}
+.liba-banner .liba-banner-s {
+  margin-top: 2px; font-family: var(--f-body); font-size: clamp(14px, 3vmin, 19px); letter-spacing: .35em; color: var(--vermilion-dark);
+  text-shadow: 0 0 10px rgba(246, 238, 222, 1);
+}
+.liba-banner.dark .liba-banner-t { color: #fbf0d8; text-shadow: 0 0 16px rgba(0, 0, 0, .8), 0 2px 3px rgba(0, 0, 0, .7); }
+.liba-banner.dark .liba-banner-s { color: var(--gold-2); text-shadow: 0 0 10px rgba(0, 0, 0, .9); }
+@keyframes liba-banner {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); filter: blur(6px); }
+  18% { opacity: 1; transform: translate(-50%, -50%) scale(.97); filter: blur(0); }
+  26% { transform: translate(-50%, -50%) scale(1); }
+  78% { opacity: 1; transform: translate(-50%, -50%) scale(1.02); }
+  100% { opacity: 0; transform: translate(-50%, -54%) scale(1.04); }
+}
+
+/* ---------- HUD 小部件 ---------- */
+.liba-hud { display: inline-flex; align-items: center; gap: .5em; white-space: nowrap; }
+.liba-hud b { font-family: var(--f-brush); font-weight: normal; font-size: 1.2em; color: var(--ink); }
+.liba-hud .good { color: var(--jade); }
+.liba-hud .bad { color: var(--vermilion); }
+.liba-hud .warn { color: var(--vermilion); animation: jl-blink .8s ease-in-out infinite; }
+.liba-hud .dim { color: var(--ink-3); }
+.liba-meter { display: inline-block; position: relative; width: 70px; height: 9px; border-radius: 5px; background: rgba(59, 53, 45, .15); box-shadow: inset 0 0 0 1px rgba(59, 53, 45, .45); overflow: hidden; vertical-align: middle; }
+.liba-meter > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--jade); transition: width .25s ease, background .25s; }
+@media (max-width: 640px) { .liba-meter { width: 46px; } }

@@ -1,0 +1,45 @@
+/* 经史子集 */
+.books-ui { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.books-desc {
+  position: absolute; padding: 10px 16px 12px; font-family: var(--f-body); color: var(--ink);
+  background: rgba(251, 246, 234, .94); border: 1.5px solid rgba(59, 53, 45, .55); border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(30, 18, 6, .22), inset 0 0 0 3px rgba(200, 161, 90, .18);
+  transition: opacity .25s ease, transform .3s cubic-bezier(.2, .9, .3, 1.2); opacity: 0; transform: translateY(6px);
+}
+.books-desc.show { opacity: 1; transform: none; }
+.books-desc .bd-t { font-family: var(--f-brush); font-size: 26px; letter-spacing: .08em; color: var(--ink); line-height: 1.2; }
+.books-desc .bd-d { font-size: 18px; line-height: 1.5; color: var(--ink-2); margin-top: 3px; }
+.books-desc .bd-q { font-size: 13px; color: var(--ink-3); margin-top: 6px; letter-spacing: .06em; }
+
+.books-teach {
+  position: absolute; padding: 7px 14px 8px; font-family: var(--f-body); font-size: 17px; line-height: 1.45;
+  color: var(--ink-2); background: rgba(251, 246, 234, .9); border-radius: 8px; border-left: 4px solid var(--ink-3);
+  box-shadow: 0 3px 10px rgba(30, 18, 6, .18); opacity: 0; transition: opacity .25s ease;
+}
+.books-teach.show { opacity: 1; }
+.books-teach.good { border-left-color: var(--jade); }
+.books-teach.bad { border-left-color: var(--vermilion); }
+.books-teach b { font-weight: normal; font-family: var(--f-brush); font-size: 1.12em; }
+.books-teach.good b { color: var(--jade); }
+.books-teach.bad b { color: var(--vermilion); }
+.books-teach.pop { animation: books-pop .35s cubic-bezier(.2, .9, .3, 1.4); }
+
+.books-streak {
+  position: absolute; left: 14px; top: 12px; padding: 4px 12px 5px; border-radius: 16px;
+  font-family: var(--f-brush); font-size: 20px; letter-spacing: .1em; color: #fbeee0;
+  background: linear-gradient(180deg, var(--vermilion-2), var(--vermilion)); box-shadow: 0 3px 10px rgba(120, 30, 20, .35), inset 0 0 0 2px rgba(251, 238, 224, .5);
+  opacity: 0; transform: scale(.8); transition: opacity .2s ease, transform .2s ease;
+}
+.books-streak.show { opacity: 1; transform: scale(1); }
+.books-streak b { font-weight: normal; font-size: 1.25em; }
+.books-streak.pop { animation: books-pop .4s cubic-bezier(.2, .9, .3, 1.6); }
+.books-streak.hot { background: linear-gradient(180deg, #e0a040, #b86a1c); }
+@keyframes books-pop { 0% { transform: scale(.85); } 55% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+@media (max-width: 560px) {
+  .books-desc { padding: 7px 12px 9px; }
+  .books-desc .bd-t { font-size: 22px; }
+  .books-desc .bd-d { font-size: 16px; }
+  .books-teach { font-size: 15px; padding: 6px 10px 7px; }
+  .books-streak { font-size: 17px; }
+}

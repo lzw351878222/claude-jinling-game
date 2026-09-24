@@ -1,0 +1,48 @@
+/* 刻版 */
+.carve-ui { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
+.carve-ui > * { pointer-events: auto; }
+.carve-target {
+  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  background: linear-gradient(180deg, #fbf6ea, #f1e6cc); border: 1.5px solid var(--ink-2); border-radius: 6px;
+  box-shadow: inset 0 0 0 3px rgba(200, 161, 90, .3), 0 4px 12px rgba(40, 25, 10, .22);
+  transition: opacity .25s ease, transform .25s ease; pointer-events: none;
+}
+.carve-target.hide { opacity: 0; transform: translateY(-6px); }
+.carve-target-lbl { font-family: var(--f-body); font-size: 14px; color: var(--ink-3); letter-spacing: .1em; white-space: nowrap; }
+.carve-target-ch { font-family: var(--f-brush); line-height: 1; color: var(--ink); }
+.carve-target-ch.pop { animation: carve-pop .35s cubic-bezier(.2, .9, .3, 1.3) both; }
+@keyframes carve-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.carve-cand {
+  position: absolute; display: grid; place-items: center; padding: 0; margin: 0; cursor: pointer; outline: none;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, .6), transparent 60%),
+    linear-gradient(160deg, #fbf5e6, #eee1c4);
+  border: 1.5px solid rgba(59, 53, 45, .55); border-radius: 4px;
+  box-shadow: 0 3px 0 rgba(60, 40, 20, .35), 0 6px 14px rgba(40, 25, 10, .2);
+  transition: transform .12s ease, box-shadow .15s ease, opacity .25s ease, filter .25s ease, border-color .2s ease;
+  touch-action: manipulation; -webkit-user-select: none; user-select: none;
+}
+.carve-cand:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(60, 40, 20, .35), 0 3px 8px rgba(40, 25, 10, .2); }
+@media (hover: hover) { .carve-cand:hover { border-color: var(--vermilion); box-shadow: 0 3px 0 rgba(60, 40, 20, .35), 0 0 0 2px rgba(178, 58, 46, .35), 0 6px 14px rgba(40, 25, 10, .2); } }
+.carve-cand.sel { border-color: var(--vermilion); box-shadow: 0 3px 0 rgba(60, 40, 20, .35), 0 0 0 3px rgba(178, 58, 46, .55), 0 6px 14px rgba(40, 25, 10, .2); }
+.carve-cand .carve-glyph { font-family: var(--f-brush); line-height: 1; color: #1d1b18; display: inline-block; pointer-events: none; }
+.carve-cand .carve-key {
+  position: absolute; left: 4px; top: 3px; font-family: var(--f-ui); font-size: 10px; line-height: 1; color: var(--ink-3);
+  padding: 1px 3px; border-radius: 3px; background: rgba(0, 0, 0, .05); pointer-events: none;
+}
+@media (hover: none) { .carve-cand .carve-key { display: none; } }
+.carve-cand.wrong { animation: jl-shake .42s ease both; border-color: var(--vermilion); filter: grayscale(.9); opacity: .55; }
+.carve-cand.right { border-color: #b8860b; box-shadow: 0 0 0 3px rgba(232, 190, 90, .95), 0 0 24px rgba(232, 190, 90, .85); }
+.carve-cand.gone { opacity: 0; transform: scale(.85); pointer-events: none; }
+.carve-cand.off { pointer-events: none; }
+.carve-why {
+  position: absolute; transform: translate(-50%, -100%); z-index: 6;
+  font-family: var(--f-body); font-size: 13px; line-height: 1.3; color: #fff; background: var(--vermilion);
+  padding: 3px 8px; border-radius: 5px; white-space: nowrap; pointer-events: none; box-shadow: 0 3px 8px rgba(0,0,0,.25);
+  animation: jl-fade-in .2s ease both;
+}
+.carve-act { position: absolute; left: 0; right: 0; margin: 0 auto; width: max-content; z-index: 5; min-width: 8em; font-size: 24px; }
+.carve-act.hide { display: none; }
+.carve-auto { position: absolute; right: 10px; z-index: 5; }
+.carve-auto.hide { display: none; }
