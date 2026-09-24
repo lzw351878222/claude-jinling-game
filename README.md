@@ -6,8 +6,7 @@
 
 ## 在线试玩
 
-- **襄阳服务器**：<http://171.80.0.26:18887/>
-- **GitHub Pages**：<https://lzw351878222.github.io/claude-jinling-game/>
+- **在线试玩**：<https://lzw351878222.github.io/claude-jinling-game/>
 - **离线**：下载 [`docs/index.html`](docs/index.html)，双击用浏览器打开即可（电脑、手机都能玩）
 
 ## 由 Claude 开发
