@@ -257,7 +257,10 @@ function resultModal(parent, game, result, success, canSkip) {
     if (!success) seal.style.fontSize = '40px';
     audio.sfx(success ? 'stamp' : 'wood');
     if (result.score != null && result.score !== 0 && result.scoreText !== false) {
-      el('div', 'mg-score', card, result.scoreText || `得分 ${result.score}`);
+      // 按「 · 」分段，每段不拆行：窄屏上只在分隔处换行
+      const sc = el('div', 'mg-score', card);
+      const parts = (result.scoreText || `得分 ${result.score}`).split(' · ');
+      parts.forEach((t, k) => { if (k) sc.append(' '); el('span', '', sc, k < parts.length - 1 ? `${t} ·` : t); });
     }
     el('div', 'mg-note', card, result.note || (success ? '做得好！' : '差一点点，再来一次吧。'));
     const actions = el('div', 'mg-actions', card);
