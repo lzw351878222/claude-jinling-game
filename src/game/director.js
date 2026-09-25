@@ -148,7 +148,9 @@ export class Director {
     this.letterbox(false);
     g.busy = 0; g.input.enabled = true; this.ui.setBusy(false); this.ui.showHud(true);
     this.g.rig.release(0.8);
-    try { await waitFn(); } finally { g.busy = Math.max(saved, g.busy); g.input.enabled = false; this.ui.setBusy(true); }
+    // 恢复时把剧情的锁叠加回去：waitFn 常在一段互动脚本（game.run，busy=1）里完成，
+    // 若取 max，互动脚本一结束 busy 就归零，玩家会在后续过场里重新拿回操控、再次触发互动
+    try { await waitFn(); } finally { g.busy += saved; g.input.enabled = false; this.ui.setBusy(true); }
   }
   /** 剧情中换场景：黑场 → 载入 → 淡入 */
   async goto(map, { restored = [], spawn = 'default', color = '#000', ms = 700, hold = 200 } = {}) {
