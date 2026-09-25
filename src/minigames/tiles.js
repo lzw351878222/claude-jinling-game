@@ -542,9 +542,11 @@ export default {
       }
       const extra = Math.max(0, totalMoves - totalPar);
       const perfect = extra <= 6 && hints === 0;
+      const score = Math.max(40, Math.round(100 - extra * 0.8 - hints * 6));
       return {
         success: true,
-        score: Math.max(40, Math.round(100 - extra * 0.8 - hints * 6)),
+        score,
+        scoreText: `转了 ${totalMoves} 次（顺转最少 ${totalPar} 次）${hints ? ` · 提示 ${hints} 次` : ''} · 得分 ${score} / 100`,
         perfect,
         note: '白象、飞羊、飞天，三块拱门琉璃件各归其位。相传琉璃塔的构件都烧造一式三份，一份上塔，两份编号埋存备用——蠹啃掉的正是那些墨书编号。',
       };

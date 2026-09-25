@@ -804,9 +804,11 @@ export default {
       tip.hide();
       const extra = Math.max(0, totalMoves - totalMin);
       const perfect = extra === 0;
+      const score = Math.max(40, 100 - 4 * extra);
       return {
         success: true,
-        score: Math.max(40, 100 - 4 * extra),
+        score,
+        scoreText: `点了 ${totalMoves} 次 · 最少 ${totalMin} 次 · 得分 ${score} / 100`,
         perfect,
         note: perfect
           ? '三层都用最少的步数点亮，一勺灯油也没浪费！琉璃塔九层八面，塔上长明灯入夜不熄，江上行舟远远可见。'

@@ -18,6 +18,8 @@
 .hub-list-body li i { flex: 0 0 auto; width: 16px; height: 16px; border-radius: 3px; border: 2px solid var(--ink-3); background: rgba(255, 255, 255, .35); }
 .hub-list-body li span { flex: 1; }
 .hub-list-body li em { font-style: normal; font-size: 11px; color: var(--gold-dark); border: 1px solid var(--gold); border-radius: 3px; padding: 0 4px; letter-spacing: .08em; }
+.hub-list-body li .hl-stars { font-weight: normal; font-size: 13px; letter-spacing: 0; color: #d49a1c; text-shadow: 0 1px 0 rgba(138, 106, 44, .5); white-space: nowrap; }
+.hub-list-body li .hl-stars s { text-decoration: none; color: rgba(59, 53, 45, .22); text-shadow: none; }
 .hub-list-body li.done { color: var(--ink-3); }
 .hub-list-body li.done span { text-decoration: line-through; text-decoration-color: rgba(178, 58, 46, .55); }
 .hub-list-body li.done i { border-color: var(--jade); background: var(--jade); }

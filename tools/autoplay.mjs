@@ -17,6 +17,7 @@ if (!query.includes('ch=')) {
   await p.clickText('开始旅程').catch(async () => { await p.clickText('重新开始'); await p.wait(500); await p.clickText('重新开始'); });
 }
 let mgSeen = 0;
+let idleSince = 0;
 
 while ((Date.now() - t0) / 1000 < secs) {
   const s = await p.eval(`(() => {
@@ -38,6 +39,7 @@ while ((Date.now() - t0) / 1000 < secs) {
   })()`).catch((e) => ({ k: 'err', e: String(e) }));
   if (s.k !== lastKind) { console.log(`[${((Date.now() - t0) / 1000).toFixed(1)}s]`, JSON.stringify(s)); }
   const changed = s.k !== lastKind;
+  if (s.k !== 'idle') idleSince = 0;
   lastKind = s.k;
   if (changed && ['chapcard', 'seal', 'hub', 'm3card', 'mgcard', 'minigame', 'credits', 'choice'].includes(s.k)) await shot(s.k);
   else if (Date.now() - lastShot > 15000) { lastShot = Date.now(); await shot(s.k); }
@@ -56,7 +58,13 @@ while ((Date.now() - t0) / 1000 < secs) {
       await p.wait(700); break;
     case 'hub': await p.wait(800); await p.clickText('', '.hub-play.ready'); break;
     case 'credits': await p.wait(3000); break;
-    default: await p.wait(400);
+    default:
+      // 尾声里需要玩家自己走到石麒麟跟前：空闲太久就直接和它互动
+      if (s.k === 'idle' && Date.now() - (idleSince || (idleSince = Date.now())) > 6000) {
+        idleSince = 0;
+        await p.eval(`(() => { const g = window.__app?.game; const t = g?.things?.find((x) => /石麒麟/.test(x.name || '')); if (t && !g.busy) g.interactWith({ kind: 'thing', thing: t }); })()`);
+      }
+      await p.wait(400);
   }
 }
 await shot('end');

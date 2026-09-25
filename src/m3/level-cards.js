@@ -2,6 +2,14 @@
 import { el, html } from '../core/util.js';
 import { audio } from '../core/audio.js';
 import { goalIcon, goalName } from './art.js';
+import { starLine, moveBonusOf } from './logic.js';
+
+export const fmtNum = (n) => Math.round(n).toLocaleString('en-US');
+/** "省步有赏"的规则说明（开始卡、结算卡共用） */
+function ruleLine(parent, def) {
+  html('div', 'm3-card-rule', parent,
+    `<span>剩 <b>${starLine(def.moves || 20)}</b> 步以上过关 <i>★★★</i></span><span>每省一步 <b>+${fmtNum(moveBonusOf(def))}</b> 分</span>`);
+}
 
 function card(root) {
   const m = el('div', 'm3-modal', root);
@@ -37,6 +45,7 @@ export async function introCard(root, def, board) {
   if (def.intro) el('div', 'm3-card-text', c, def.intro);
   goalRow(c, board);
   html('div', 'm3-card-moves', c, def.boss ? `步数 <b>${board.moves}</b> · 击退遗忘之蠹` : `步数 <b>${board.moves}</b>`);
+  ruleLine(c, def);
   const act = el('div', 'mg-actions', c);
   const go = el('button', 'jl-btn primary', act, '开 始');
   audio.sfx('open');
@@ -44,18 +53,35 @@ export async function introCard(root, def, board) {
   m.remove();
 }
 
-export async function winCard(root, def, board, stars) {
+/**
+ * 结算卡：星级 + 分数明细（消除得分 + 余步奖励 = 总分）
+ * @param {{ stars, used, left, per, matchScore, total, helped }} r
+ */
+export async function winCard(root, def, r) {
   const { m, c } = card(root);
   c.classList.add('win');
   html('div', 'm3-card-sub', c, def.chapterName || '');
   el('h2', 'jl-title', c, '踪迹已复原');
   const st = el('div', 'm3-stars', c);
   for (let k = 0; k < 3; k++) {
-    const s = el('span', 'm3-bigstar' + (k < stars ? ' on' : ''), st, '★');
+    const s = el('span', 'm3-bigstar' + (k < r.stars ? ' on' : ''), st, '★');
     s.style.animationDelay = `${0.3 + k * 0.28}s`;
-    if (k < stars) setTimeout(() => audio.sfx('star', { note: 4 + k * 2 }), 300 + k * 280);
+    if (k < r.stars) setTimeout(() => audio.sfx('star', { note: 4 + k * 2 }), 300 + k * 280);
   }
-  html('div', 'm3-card-moves', c, `得分 <b>${board.score}</b>`);
+  html('div', 'm3-card-moves', c, r.helped
+    ? `用了 <b>${r.used}</b> 步（借了阿麟五步）`
+    : `用了 <b>${r.used}</b> 步 · 省下 <b>${r.left}</b> 步`);
+  const tb = el('div', 'm3-card-score', c);
+  const row = (k, v, cls = '') => html('div', 'm3-score-row ' + cls, tb, `<span>${k}</span><b>${v}</b>`);
+  row('消除得分', fmtNum(r.matchScore));
+  row('余步奖励', r.left ? `${r.left} 步 × ${fmtNum(r.per)} = ${fmtNum(r.left * r.per)}` : (r.helped ? '借步过关不计' : '0'));
+  row('总　分', fmtNum(r.total), 'total');
+  if (r.stars < 3) {
+    const need = starLine(def.moves || 20);
+    html('div', 'm3-card-tip', c, r.helped
+      ? '下次试试不借步过关：省下的步数越多，星越多、分越高。'
+      : `省下 <b>${need}</b> 步以上过关就是三星——少走一步，就多一份余步奖励。`);
+  }
   if (def.outro) el('div', 'm3-card-text', c, def.outro);
   const act = el('div', 'mg-actions', c);
   const go = el('button', 'jl-btn primary', act, '继 续');

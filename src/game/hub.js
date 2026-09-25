@@ -30,8 +30,10 @@ export class Hub {
     this.listBody.innerHTML = '';
     steps.forEach((s, i) => {
       const cls = i < cur ? 'done' : i === cur ? 'cur' : 'todo';
-      const li = html('li', cls, this.listBody, `<i></i><span>${i <= cur ? s.title : '？？？'}</span>${s.kind === 'mg' ? '<em>特别关</em>' : ''}`);
-      void li;
+      // 已过的消消乐关：显示拿到的星（用的步越少星越多）
+      const n = s.kind === 'level' && i < cur ? this.app.state?.levelStars?.[s.id] || 0 : 0;
+      const stars = n ? `<b class="hl-stars" title="${n} 星">${'★'.repeat(n)}<s>${'★'.repeat(3 - n)}</s></b>` : '';
+      html('li', cls, this.listBody, `<i></i><span>${i <= cur ? s.title : '？？？'}</span>${s.kind === 'mg' ? '<em>特别关</em>' : stars}`);
     });
     const s = steps[cur];
     if (s) {

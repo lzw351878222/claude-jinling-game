@@ -3,13 +3,14 @@
 // · 机器人策略与 tools/m3-sim.mjs 相同：每步走 board.findHint()（贪心：先特效组合，再挑最大的连消/能出特效的步）。
 // · 回合流程照搬 controller.js：afterSwap → [settle(下落/收集物件) → cascade]* → endMove → bossTurn → 胜负 → 死局洗牌。
 // · 不计"借五步"。每局一直下到胜利（上限 max(2×步数, 步数+25)），于是能同时算出任意步数上限下的胜率，给出建议步数。
-// · 星级 = controller.onWin 的公式，按"胜利那一刻剩余步数"计算；分数含 bonusRound 结算奖励（star3 取胜局得分的 75 分位）。
+// · 星级 = logic.starsFor，按"胜利那一刻剩余步数"计算；总分 = 消除得分 + 余步 × def.bonus（= controller.bonusRound）。
+//   建议的 bonus = 胜局"每步消除得分"中位数的 5 倍；"省步一致率" = 任取两局胜局，剩步多的那局总分更高的比例（应 ≥ 93%）。
 // · 不变量（同 m3-sim）：棋子只在可容纳的格子上、id 唯一、重力后无可补的空格、提示步有效、连锁不死循环、洗牌后无三连；
 //   另查：开局无三连且有步可走、洗牌后仍无步（卡死）、关卡数据格式、intro 与目标数字是否一致。
 import { Worker, isMainThread, parentPort } from 'node:worker_threads';
 import os from 'node:os';
 import { pathToFileURL } from 'node:url';
-import { Board, NAMES } from '../src/m3/logic.js';
+import { Board, NAMES, starsFor, moveBonusOf } from '../src/m3/logic.js';
 import { LEVELS, LEVEL_ORDER } from '../src/m3/levels.js';
 
 // 目标胜率：[下限, 上限, 瞄准值]（章节区间 + 章内锯齿，终关最难）
@@ -24,7 +25,7 @@ const AIM = {
   final: 76,
 };
 const rangeOf = (id) => RANGE[id === 'final' ? 'final' : id[0] === 'p' ? 'p' : id.split('-')[0]];
-const starsOf = (left, M) => (left >= Math.max(3, M * 0.25) ? 3 : left / M > 0.08 || left >= 2 ? 2 : 1); // = controller.onWin
+const starsOf = starsFor; // = controller.onWin
 const capOf = (def) => Math.max(def.moves * 2, def.moves + 25);
 
 // ------------------------------------------------------------------ 单局（worker 里跑）
@@ -64,18 +65,17 @@ function bossTurn(b, def) { // = controller.endTurn/bossTurn
   }
 }
 function bonusRound(b, left) { // = controller.bonusRound（Math.random 换成棋盘 rng）
+  const per = moveBonusOf(b.def);
   b.moves = left;
-  let n = Math.min(b.moves, 10);
-  while (n-- > 0 && b.moves > 0) {
-    const cells = b.cells.map((c, i) => [c, i]).filter(([c]) => b.canHold(c) && c.tile && c.tile.kind === 'normal' && !c.rope);
-    if (!cells.length) break;
-    const [c, i] = cells[Math.floor(b.rng() * cells.length)];
-    c.tile.kind = b.rng() < 0.5 ? 'lineH' : 'lineV';
-    b.moves--;
-    resolve(b, b.clearCells([i], {}), 'bonus');
-  }
-  b.score += b.moves * 300;
+  b.scoreFrozen = true;
+  const cells = b.cells.map((c, i) => [c, i]).filter(([c]) => b.canHold(c) && c.tile && c.tile.kind === 'normal' && !c.rope);
+  for (let k = cells.length - 1; k > 0; k--) { const j = Math.floor(b.rng() * (k + 1)); [cells[k], cells[j]] = [cells[j], cells[k]]; }
+  const picks = cells.slice(0, Math.min(left, 8));
+  for (const [c] of picks) { c.tile.kind = b.rng() < 0.5 ? 'lineH' : 'lineV'; b.moves--; b.score += per; }
+  b.score += b.moves * per;
   b.moves = 0;
+  if (picks.length) { b.clearCells(picks.map(([, i]) => i), {}); settle(b); checkInvariants(b, 'bonus'); } // 结算只扫一遍、落一次（不连消）
+  b.scoreFrozen = false;
 }
 function playGame(def, seed) {
   const where = `${def.id}#${seed}`;
@@ -112,7 +112,7 @@ function playGame(def, seed) {
   }
   if (b.won()) {
     r.X = b.movesUsed;
-    if (r.X <= M) { r.scoreWin = b.score; bonusRound(b, M - r.X); r.score = b.score; }
+    if (r.X <= M) { r.scoreWin = b.score; r.rate = b.score / r.X; bonusRound(b, M - r.X); r.score = b.score; }
   }
   return r;
 }
@@ -215,6 +215,22 @@ export function xQuant(rs, ps = [0.5, 0.8, 0.9, 0.95]) {
   return ps.map((p) => xs[Math.min(xs.length - 1, Math.floor(p * xs.length))]);
 }
 export { playGame, starsOf };
+/** 建议的每步奖励：每步消除得分中位数 × 5，取整到 500 / 1000 */
+export function suggestBonus(wins) {
+  const rs = wins.map((r) => r.rate).filter((x) => x > 0).sort((a, b) => a - b);
+  if (!rs.length) return 5000;
+  const k = rs[Math.floor(rs.length / 2)] * 5;
+  return Math.max(2000, k >= 10000 ? Math.round(k / 1000) * 1000 : Math.round(k / 500) * 500);
+}
+/** 省步一致率：任取两局胜局（剩步不同），剩步多的那局总分更高的比例 */
+export function concordance(wins, M) {
+  let ok = 0, tot = 0;
+  for (const a of wins) for (const b of wins) {
+    const la = M - a.X, lb = M - b.X;
+    if (la > lb) { tot++; if (a.score > b.score) ok++; }
+  }
+  return tot ? (ok / tot) * 100 : 100;
+}
 
 async function main() {
   const N = Number(process.argv[2] || 200);
@@ -231,7 +247,7 @@ async function main() {
   const pct = (a, b) => (b ? (a / b) * 100 : 0);
   const q = (arr, p) => { if (!arr.length) return 0; const s = [...arr].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
   const gstr = (def) => def.goals.map((g) => g.type === 'color' ? `${NAMES[g.color]}${g.n}` : g.type === 'item' ? `${g.item}${g.n}` : g.type === 'boss' ? `boss${def.boss.hp}` : `${g.type}${new Board(def, 1).goals.find((x) => x.type === g.type).n}`).join('+');
-  console.log('id     名称      尺寸   色 步  目标                    胜率   区间      瞄准  均用步(剩%)  ★3/★2/★1 %     分75  star3  洗牌  卡死 建议步  所需步 p50/p80/p90/p95');
+  console.log('id     名称      尺寸   色 步  目标                    胜率   区间      瞄准  均用步(剩%)  ★3/★2/★1 %   每步奖励 建议   一致率  洗牌  卡死 建议步  所需步 p50/p80/p90/p95');
   const rows = [];
   for (const id of ids) {
     const def = LEVELS[id], M = def.moves, rs = res[id];
@@ -247,13 +263,12 @@ async function main() {
     const wr = pct(wins.length, n);
     const flag = wr < lo ? 'LOW ' : wr > hi ? 'HIGH' : ' ok ';
     const stuck = ok.filter((r) => r.stuck >= 0 && r.stuck < M).length, noStart = ok.filter((r) => r.noStartMove).length;
-    const sc75 = q(wins.map((r) => r.score), 0.75), pre75 = q(wins.map((r) => r.scoreWin), 0.75);
-    const s3 = sc75 >= 20000 ? Math.round(sc75 / 1000) * 1000 : Math.round(sc75 / 500) * 500;
+    const per = moveBonusOf(def), sugPer = suggestBonus(wins), conc = concordance(wins, M);
     const shuf = ok.reduce((s, r) => s + r.shuffles, 0) / (n || 1);
     const emptyAvg = ok.reduce((s, r) => s + r.emptyMoves, 0) / (n || 1) / M, maxEmpty = Math.max(0, ...ok.map((r) => r.maxEmpty));
     const bigAvg = ok.reduce((s, r) => s + r.bigEmpty, 0) / (n || 1) / M, empty90 = q(ok.map((r) => r.maxEmpty), 0.9);
     rows.push({ id, wr, used, st, n: wins.length });
-    console.log(`${id.padEnd(6)} ${def.name.padEnd(4, '　')}  ${`${def.w}×${def.h}`.padEnd(5)} ${def.colors}  ${String(M).padStart(2)}  ${gstr(def).padEnd(22)} ${wr.toFixed(1).padStart(5)}% ${flag} ${`${lo}-${hi}`.padEnd(6)} ${String(aim).padStart(4)}  ${used.toFixed(1).padStart(4)} (${pct(M - used, M).toFixed(0).padStart(2)}%)   ${st.slice(1).reverse().map((v) => pct(v, wins.length).toFixed(0).padStart(3)).join('/')}   ${String(sc75).padStart(6)} ${String(def.star3).padStart(6)}  ${shuf.toFixed(2)}  ${String(stuck + noStart).padStart(3)}   ${String(sug).padStart(3)}   ${xQuant(ok).join('/')}`);
+    console.log(`${id.padEnd(6)} ${def.name.padEnd(4, '　')}  ${`${def.w}×${def.h}`.padEnd(5)} ${def.colors}  ${String(M).padStart(2)}  ${gstr(def).padEnd(22)} ${wr.toFixed(1).padStart(5)}% ${flag} ${`${lo}-${hi}`.padEnd(6)} ${String(aim).padStart(4)}  ${used.toFixed(1).padStart(4)} (${pct(M - used, M).toFixed(0).padStart(2)}%)   ${st.slice(1).reverse().map((v) => pct(v, wins.length).toFixed(0).padStart(3)).join('/')}   ${String(per).padStart(6)} ${String(sugPer).padStart(6)}  ${conc.toFixed(0).padStart(4)}%  ${shuf.toFixed(2)}  ${String(stuck + noStart).padStart(3)}   ${String(sug).padStart(3)}   ${xQuant(ok).join('/')}`);
     // 输局瓶颈：到步数用完时各目标还差多少
     const losses = ok.filter((r) => r.atM);
     if (losses.length && def.goals.length > 1) {
@@ -261,7 +276,9 @@ async function main() {
       console.log(`         输局时未完成 → ${miss.join('  ')}`);
     }
     if (maxEmpty > 2 || emptyAvg > 0.25) console.log(`         注意：落不下棋子的空格 最多 ${maxEmpty} 格（90% 的局 ≤ ${empty90} 格），${(emptyAvg * 100).toFixed(1)}% 的回合有空格，${(bigAvg * 100).toFixed(1)}% 的回合 ≥5 格`);
-    if (Math.abs(def.star3 - s3) / s3 > 0.2) console.log(`         star3：现 ${def.star3} → 建议 ${s3}（胜局终分 75 分位；不含结算奖励的 75 分位 ${pre75}）`);
+    if (!def.bonus) problems.push(`${id}: 缺 bonus（每步奖励），建议 ${sugPer}`);
+    else if (Math.abs(per - sugPer) / sugPer > 0.25) console.log(`         bonus：现 ${per} → 建议 ${sugPer}（每步消除得分中位数 × 5）`);
+    if (wins.length >= 20 && conc < 90) problems.push(`${id}: 省步一致率只有 ${conc.toFixed(0)}%（剩步多的局总分反而低），调大 bonus`);
     if (noStart) problems.push(`${id}: ${noStart} 局开局无步可走`);
     if (stuck) problems.push(`${id}: ${stuck} 局洗牌后仍无步可走（卡死）`);
   }

@@ -10,7 +10,7 @@ export const LEVELS_C = [
     music: 'level', w: 9, h: 8, moves: 23, colors: 4,
     items: { kind: 'hehua', total: 7, start: 4, rate: 0.4, max: 4 },
     goals: [{ type: 'item', item: 'hehua', n: 6 }],
-    star3: 138000,
+    bonus: 20000,
   },
   {
     // 大灯笼的轮廓
@@ -41,7 +41,7 @@ export const LEVELS_C = [
       '.........',
     ],
     goals: [{ type: 'lamp' }],
-    star3: 42000,
+    bonus: 8000,
   },
   {
     id: 'c5-3', name: '书坊', chapterName: C5,
@@ -71,7 +71,7 @@ export const LEVELS_C = [
       '........',
     ],
     goals: [{ type: 'ink' }, { type: 'rope' }],
-    star3: 69000,
+    bonus: 11000,
   },
   {
     // 贡院号舍：一排排隔开的小间
@@ -102,7 +102,7 @@ export const LEVELS_C = [
       '.........',
     ],
     goals: [{ type: 'rubble' }],
-    star3: 37000,
+    bonus: 5500,
   },
   {
     id: 'c5-5', name: '桨声', chapterName: C5,
@@ -130,7 +130,7 @@ export const LEVELS_C = [
       '.1111111.',
     ],
     goals: [{ type: 'worm' }, { type: 'lamp' }],
-    star3: 63000,
+    bonus: 11000,
   },
   {
     id: 'c5-6', name: '灯火', chapterName: C5,
@@ -162,7 +162,7 @@ export const LEVELS_C = [
       '.........',
     ],
     goals: [{ type: 'lamp' }, { type: 'worm' }],
-    star3: 87000,
+    bonus: 15000,
   },
   // ------------------------------------------------------------ 终章
   {
@@ -194,6 +194,6 @@ export const LEVELS_C = [
     ],
     boss: { hp: 480, every: 3, acts: ['ink', 'worm', 'rope'], power: 3 },
     goals: [{ type: 'boss' }],
-    star3: 86000,
+    bonus: 12000,
   },
 ];

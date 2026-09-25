@@ -1,5 +1,6 @@
 // 消消乐关卡控制器
-import { introCard, winCard, loseCard, confirmQuit } from './level-cards.js';
+import { introCard, winCard, loseCard, confirmQuit, fmtNum } from './level-cards.js';
+import { starsFor, moveBonusOf } from './logic.js';
 import { audio } from '../core/audio.js';
 import { ASSETS } from '../assets.js';
 
@@ -184,33 +185,54 @@ export class Controller {
   }
   async onWin() {
     this.lock();
+    const B = this.board;
+    const M = this.def.moves || 20;
+    // 星级和余步奖励都按"过关那一刻"剩的步数算；借过阿麟的五步则只给一星、不计余步
+    const left = this.helped ? 0 : Math.max(0, B.moves);
+    const stars = this.helped ? 1 : starsFor(left, M);
+    const matchScore = B.score;
+    const per = moveBonusOf(this.def);
+    this.ui.finalStars = stars;
     audio.sfx('level_win');
     await this.ui.banner('踪迹复原！', 'win');
-    await this.bonusRound();
-    const B = this.board;
-    const ratio = B.moves / (this.def.moves || 20);
-    const stars = B.moves >= Math.max(3, (this.def.moves || 20) * 0.25) ? 3 : ratio > 0.08 || B.moves >= 2 ? 2 : 1;
+    await this.bonusRound(left, per);
     this.ui.update();
-    await winCard(this.ui.root, this.def, B, stars);
-    this.finish({ win: true, stars, score: B.score, movesLeft: B.moves });
+    await winCard(this.ui.root, this.def, { stars, used: B.movesUsed, left, per, matchScore, total: B.score, helped: this.helped });
+    this.finish({ win: true, stars, score: B.score, movesLeft: left });
   }
-  /** 剩余步数化作毛笔，逐一扫过棋盘加分 */
-  async bonusRound() {
+  /** 剩余步数化作毛笔（每步一支，最多八支）依次落下，再一齐扫过棋盘；每剩一步记一份余步奖励，毛笔消掉的不另计分 */
+  async bonusRound(left, per) {
     const B = this.board;
-    let n = Math.min(B.moves, 10);
-    while (n-- > 0 && B.moves > 0) {
+    B.moves = left;
+    if (left > 0) {
+      B.scoreFrozen = true;
+      this.ui.say(`省下 ${left} 步，每步奖励 ${fmtNum(per)} 分！`, 'smile', 2600);
       const cells = B.cells.map((c, i) => [c, i]).filter(([c]) => B.canHold(c) && c.tile && c.tile.kind === 'normal' && !c.rope);
-      if (!cells.length) break;
-      const [c, i] = cells[Math.floor(Math.random() * cells.length)];
-      c.tile.kind = Math.random() < 0.5 ? 'lineH' : 'lineV';
-      B.moves--;
+      for (let k = cells.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [cells[k], cells[j]] = [cells[j], cells[k]]; }
+      const picks = cells.slice(0, Math.min(left, 8));
+      const S = this.view.S;
+      for (const [c, i] of picks) {
+        c.tile.kind = Math.random() < 0.5 ? 'lineH' : 'lineV';
+        B.moves--;
+        B.score += per;
+        this.view.floaters.add('+' + fmtNum(per), this.view.cx(i), this.view.cy(i), { size: Math.round(S * 0.34), color: '#ffe08a', rise: S * 0.9, dur: 0.9 });
+        this.ui.update();
+        audio.sfx('special');
+        await wait(110);
+      }
+      B.score += B.moves * per; // 超过八步的部分直接记分
+      B.moves = 0;
       this.ui.update();
-      audio.sfx('special');
-      await wait(120);
-      const ev = B.clearCells([i], {});
-      await this.resolve(ev);
+      if (picks.length) {
+        // 一齐扫过、落一次就收：结算时的连消不计分，不必等它们一串串落定
+        await wait(260);
+        const ev = B.clearCells(picks.map(([, i]) => i), {});
+        this.playSounds(ev, 1);
+        await this.view.playClear(ev, 1);
+        await this.settle();
+      }
+      B.scoreFrozen = false;
     }
-    B.score += B.moves * 300;
     B.moves = 0;
     this.ui.update();
   }
@@ -221,6 +243,7 @@ export class Controller {
     const v = await loseCard(this.ui.root, this.def, this.board, !this.helped);
     if (v === 'help') {
       this.helped = true;
+      this.ui.helped = true;
       this.board.moves += 5;
       this.ui.update();
       this.ui.say('谢谢你，阿麟！', 'smile');

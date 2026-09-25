@@ -21,7 +21,7 @@ export const LEVELS_A = [
       '0322132',
     ],
     goals: [{ type: 'color', color: 0, n: 12 }],
-    star3: 40000,
+    bonus: 8500,
   },
   {
     // 预设棋盘：把 (4,3) 的青花往下换 → 横向四连 → 竖笔落在墨渍正中；下一步总能拿这支笔去消
@@ -50,7 +50,7 @@ export const LEVELS_A = [
       '........',
     ],
     goals: [{ type: 'ink' }],
-    star3: 90000,
+    bonus: 15000,
   },
   // ------------------------------------------------------------ 第一章 · 窑火
   {
@@ -60,7 +60,7 @@ export const LEVELS_A = [
     music: 'level', w: 8, h: 8, moves: 27, colors: 4,
     items: { kind: 'brick', total: 5, start: 3, rate: 0.35, max: 3 },
     goals: [{ type: 'item', item: 'brick', n: 4 }],
-    star3: 120000,
+    bonus: 18000,
   },
   {
     id: 'c1-2', name: '泥印', chapterName: C1,
@@ -79,7 +79,7 @@ export const LEVELS_A = [
       '.111111.',
     ],
     goals: [{ type: 'ink' }],
-    star3: 150000,
+    bonus: 25000,
   },
   {
     id: 'c1-3', name: '捆砖', chapterName: C1,
@@ -98,7 +98,7 @@ export const LEVELS_A = [
       '........',
     ],
     goals: [{ type: 'rope' }],
-    star3: 151000,
+    bonus: 24000,
   },
   {
     id: 'c1-4', name: '断垣', chapterName: C1,
@@ -126,7 +126,7 @@ export const LEVELS_A = [
       '.........',
     ],
     goals: [{ type: 'rubble' }],
-    star3: 109000,
+    bonus: 18000,
   },
   {
     // 城门洞：中间三列的出口在门洞上方
@@ -158,7 +158,7 @@ export const LEVELS_A = [
     ],
     items: { kind: 'brick', total: 4, start: 3, rate: 0.35, max: 3 },
     goals: [{ type: 'rubble' }, { type: 'item', item: 'brick', n: 3 }],
-    star3: 124000,
+    bonus: 16000,
   },
   // ------------------------------------------------------------ 第二章 · 文渊
   {
@@ -168,7 +168,7 @@ export const LEVELS_A = [
     music: 'level2', w: 8, h: 9, moves: 24, colors: 4,
     items: { kind: 'book', total: 6, start: 3, rate: 0.4, max: 4 },
     goals: [{ type: 'item', item: 'book', n: 5 }],
-    star3: 137000,
+    bonus: 20000,
   },
   {
     id: 'c2-2', name: '蠹迹', chapterName: C2,
@@ -186,7 +186,7 @@ export const LEVELS_A = [
       '........',
     ],
     goals: [{ type: 'worm' }],
-    star3: 85000,
+    bonus: 19000,
   },
   {
     // 线装书：右侧一列装订孔
@@ -217,7 +217,7 @@ export const LEVELS_A = [
       '.........',
     ],
     goals: [{ type: 'ink' }, { type: 'color', color: 3, n: 16 }],
-    star3: 55000,
+    bonus: 11000,
   },
   {
     // 蠹被绳结围住：绳子没解开之前它们爬不出来
@@ -248,7 +248,7 @@ export const LEVELS_A = [
       '........',
     ],
     goals: [{ type: 'worm' }, { type: 'rope' }],
-    star3: 53000,
+    bonus: 8500,
   },
   {
     id: 'c2-5', name: '大典', chapterName: C2,
@@ -268,6 +268,6 @@ export const LEVELS_A = [
     ],
     items: { kind: 'book', total: 5, start: 3, rate: 0.35, max: 3 },
     goals: [{ type: 'worm' }, { type: 'item', item: 'book', n: 4 }],
-    star3: 187000,
+    bonus: 25000,
   },
 ];

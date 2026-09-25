@@ -26,6 +26,17 @@ export function makeRng(seed) {
 const isSpecial = (t) => t && (t.kind === 'lineH' || t.kind === 'lineV' || t.kind === 'burst' || t.kind === 'seal');
 export { isSpecial };
 
+// ---------------------------------------------------------------- 星级与余步奖励
+// 用的步数越少，星越多、分越高：
+//   星级看过关时剩几步——剩 ≥ 四分之一（至少 3 步）三星，剩 ≥ 2 步两星，否则一星；
+//   总分 = 消除得分 + 余步 × 每步奖励（def.bonus，约为该关每步消除得分中位数的 5 倍，
+//   由 tools/m3-levels-sim.mjs 校准），所以省下一步远比多走一步消得多划算。
+export const starLine = (M) => Math.max(3, Math.ceil(M * 0.25));
+export const starsFor = (left, M) => (left >= starLine(M) ? 3 : left >= 2 ? 2 : 1);
+export const moveBonusOf = (def) => def.bonus || 5000;
+/** 连消倍率上限：连消越深每颗越值钱，但封顶，免得一次运气好的长连消盖过省步 */
+const CASCADE_CAP = 3;
+
 export class Board {
   /**
    * @param {object} def 关卡定义（见 levels.js）
@@ -58,6 +69,7 @@ export class Board {
     for (let x = 0; x < this.w; x++) for (let y = 0; y < this.h; y++) { const c = this.cell(x, y); if (c.mask) { if (!(def.noSpawn || '').includes(x)) this.spawner.add(this.idx(x, y)); break; } }
     this.items = def.items ? { ...def.items, spawned: 0, collected: 0 } : null;
     this.score = 0;
+    this.scoreFrozen = false;
     this.moves = def.moves ?? 25;
     this.movesUsed = 0;
     this.stats = { colors: new Array(COLORS).fill(0), ink: 0, rope: 0, rubble: 0, worm: 0, lamp: 0, item: 0, specials: 0 };
@@ -313,7 +325,7 @@ export class Board {
       c.tile = null;
       ev.cleared.push({ i, tile: t, by });
       if (t.color >= 0) this.stats.colors[t.color]++;
-      ev.score += (t.kind === 'normal' ? 60 : 120) * cascade;
+      ev.score += (t.kind === 'normal' ? 60 : 120) * Math.min(cascade, CASCADE_CAP);
       if (this.boss) ev.bossDmg += t.kind === 'normal' ? 1 : 3;
       this.hitFloor(i, ev);
     }
@@ -327,6 +339,7 @@ export class Board {
       this.stats.specials++;
       ev.score += spec.kind === 'seal' ? 600 : spec.kind === 'burst' ? 300 : 200;
     }
+    if (this.scoreFrozen) ev.score = 0; // 结算时余步化成的毛笔只按"每步奖励"计分
     this.score += ev.score;
     if (this.boss) { this.boss.hp = Math.max(0, this.boss.hp - ev.bossDmg); }
     return ev;
@@ -544,7 +557,7 @@ export class Board {
     const got = [];
     for (const i of this.exit) {
       const c = this.cells[i];
-      if (c.tile && c.tile.kind === 'item') { got.push({ i, tile: c.tile }); c.tile = null; this.stats.item++; if (this.items) this.items.collected++; this.score += 500; }
+      if (c.tile && c.tile.kind === 'item') { got.push({ i, tile: c.tile }); c.tile = null; this.stats.item++; if (this.items) this.items.collected++; if (!this.scoreFrozen) this.score += 500; }
     }
     return got;
   }

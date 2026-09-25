@@ -56,7 +56,8 @@
   writing-mode: vertical-rl; letter-spacing: .05em;
 }
 .mg-result-seal.fail { background: var(--ink-2); box-shadow: inset 0 0 0 4px rgba(242, 232, 213, .8), inset 0 0 0 7px var(--ink-2); }
-.mg-score { font-size: 20px; color: var(--ink-2); margin-bottom: 6px; }
+.mg-score { font-size: 20px; line-height: 1.45; color: var(--ink-2); margin-bottom: 6px; text-wrap: balance; }
+@media (max-width: 560px) { .mg-score { font-size: 16px; } }
 .mg-note { font-size: 16px; color: var(--ink-3); margin-bottom: 16px; line-height: 1.6; }
 
 /* 舞台内浮动提示 */

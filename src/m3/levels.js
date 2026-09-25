@@ -9,7 +9,7 @@
 //   items: { kind, total, start, rate, max }  需要落到每列最底可玩格的物件
 //   tiles: 预设棋子（教程用）'0'-'5' 颜色，'.' 随机
 //   goals: 1–3 个；ink/rope/rubble/worm/lamp 的数量由棋盘自动统计
-//   star3: 分数条满格的分数（≈ 机器人胜局得分的 75 分位，含结算奖励）
+//   bonus: 每省一步的余步奖励（≈ 该关每步消除得分中位数的 5 倍，保证"用的步越少，总分越高"；用模拟器校准）
 //   boss: { hp, every, acts, power }  仅终章
 //
 // 难度校准：node tools/m3-levels-sim.mjs [每关局数=200] [关卡id或前缀]

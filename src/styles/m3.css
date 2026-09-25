@@ -55,11 +55,15 @@
 .m3-goal.pulse { animation: m3-pulse .35s ease; }
 @keyframes m3-pulse { 40% { transform: scale(1.18); } }
 
-.m3-score { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
-.m3-score-n { font-family: var(--f-brush); font-size: 26px; color: var(--ink); text-align: right; line-height: 1; letter-spacing: .04em; }
-.m3-bar { position: relative; height: 12px; border-radius: 6px; background: rgba(59, 53, 45, .18); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .25); }
-.m3-bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 6px; background: linear-gradient(90deg, var(--gold), #f3d27a); transition: width .4s ease; }
-.m3-star { position: absolute; top: 50%; transform: translate(-50%, -50%); font-size: 18px; color: rgba(59, 53, 45, .35); line-height: 1; text-shadow: 0 0 2px #f6eedd; }
+.m3-score { display: flex; flex-direction: column; gap: 6px; align-items: stretch; cursor: help; }
+.m3-score-n { font-family: var(--f-brush); font-size: 26px; color: var(--ink); text-align: right; line-height: 1; letter-spacing: .04em; white-space: nowrap; }
+/* 现在过关能拿几星：随剩余步数减少而熄灭 */
+.m3-pstars { display: flex; justify-content: flex-end; align-items: center; gap: 1px; line-height: 1; }
+.m3-pstar-need { font-size: 12px; color: var(--ink-3); margin-right: 5px; white-space: nowrap; letter-spacing: .02em; }
+.m3-pstar { font-size: 20px; color: rgba(59, 53, 45, .22); font-weight: normal; transition: color .3s; }
+.m3-pstar.on { color: #e0ad2e; text-shadow: 0 1px 0 #8a6a2c, 0 0 6px rgba(255, 200, 80, .55); }
+.m3-pstar.lost { animation: m3-pstar-lost .7s ease; }
+@keyframes m3-pstar-lost { 0% { transform: scale(1.5); color: #e0ad2e; } 40% { transform: translateY(4px) scale(.9); } 100% { transform: none; } }
 
 /* ---------- 标题、离开 ---------- */
 .m3-title {
@@ -165,6 +169,16 @@
 .m3-bigstar.on:nth-child(2) { animation-name: m3-star2; }
 @keyframes m3-star { 0% { transform: scale(2.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes m3-star2 { 0% { transform: translateY(-10px) scale(2.2); opacity: 0; } 100% { transform: translateY(-10px) scale(1); opacity: 1; } }
+.m3-card-rule { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 18px; margin: -6px auto 16px; font-size: 15px; color: var(--ink-3); letter-spacing: .06em; }
+.m3-card-rule b { color: var(--vermilion); font-family: var(--f-ui); margin: 0 .1em; }
+.m3-card-rule i { font-style: normal; color: #d49a1c; letter-spacing: 0; }
+.m3-card-score { width: min(320px, 100%); margin: 0 auto 12px; padding: 8px 14px; border-radius: 10px; background: rgba(200, 161, 90, .14); box-shadow: inset 0 0 0 1px rgba(138, 106, 44, .25); }
+.m3-score-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 3px 0; font-size: 15px; color: var(--ink-2); }
+.m3-score-row b { font-family: var(--f-ui); font-weight: bold; color: var(--ink); white-space: nowrap; }
+.m3-score-row.total { margin-top: 4px; padding-top: 7px; border-top: 1px dashed rgba(59, 53, 45, .3); font-size: 17px; }
+.m3-score-row.total b { font-family: var(--f-brush); font-weight: normal; font-size: 30px; color: var(--vermilion); line-height: 1; }
+.m3-card-tip { font-size: 14px; color: var(--ink-3); margin: 0 auto 10px; max-width: 26em; line-height: 1.6; }
+.m3-card-tip b { color: var(--vermilion); }
 .m3-card-reward { display: inline-flex; align-items: center; gap: 8px; margin: 0 auto 14px; padding: 6px 16px; border-radius: 20px; background: rgba(200, 161, 90, .18); color: var(--gold-dark); font-size: 16px; letter-spacing: .08em; }
 
 /* ---------- 窄屏 / 竖屏 ---------- */
@@ -177,7 +191,10 @@
   .m3-goal, .m3-goal canvas { width: 42px; height: 42px; }
   .m3-goal-n { min-width: 22px; height: 20px; font-size: 13px; right: -5px; }
   .m3-score-n { font-size: 20px; }
-  .m3-star { font-size: 14px; }
+  .m3-pstar { font-size: 16px; }
+  .m3-pstar-need { display: none; }
+  .m3-card-rule { font-size: 14px; margin-bottom: 12px; }
+  .m3-card-moves { margin-bottom: 10px; }
   .m3-title { display: none; }
   .m3-quit { width: 40px; height: 40px; font-size: 22px; top: max(24px, calc(var(--safe-t) + 14px)); }
   .m3-stage { top: calc(max(10px, var(--safe-t)) + 80px); bottom: 108px; }

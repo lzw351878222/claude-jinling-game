@@ -56,6 +56,8 @@ export class App {
   setState(st) {
     st.restored = st.restored || {};
     st.levelStars = st.levelStars || {};
+    // 旧版星级有误（结算前把余步清零，永远记一星），旧存档里的星级作废不显示
+    if (st.starsV !== 2) { st.levelStars = {}; st.starsV = 2; }
     st.step = st.step || 0;
     this.state = st;
     this.game.state = st;

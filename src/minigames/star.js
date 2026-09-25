@@ -683,9 +683,11 @@ export default {
       await tw.delay(2.6);
       tip.hide();
       const perfect = mistakes === 0;
+      const score = Math.max(40, 100 - 15 * mistakes);
       return {
         success: true,
-        score: Math.max(40, 100 - 15 * mistakes),
+        score,
+        scoreText: `失误 ${mistakes} 次 · 得分 ${score} / 100`,
         perfect,
         mistakes,
         note: perfect

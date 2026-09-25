@@ -10,7 +10,7 @@ export const LEVELS_B = [
     music: 'level', w: 9, h: 9, moves: 25, colors: 4,
     items: { kind: 'silk', total: 7, start: 4, rate: 0.4, max: 4 },
     goals: [{ type: 'item', item: 'silk', n: 6 }],
-    star3: 186000,
+    bonus: 24000,
   },
   {
     id: 'c3-2', name: '缆绳', chapterName: C3,
@@ -30,7 +30,7 @@ export const LEVELS_B = [
       '........',
     ],
     goals: [{ type: 'rope' }],
-    star3: 67000,
+    bonus: 12000,
   },
   {
     // 宝船侧影：两根桅杆 + 收窄的船底
@@ -61,7 +61,7 @@ export const LEVELS_B = [
       '.........',
     ],
     goals: [{ type: 'rubble' }],
-    star3: 31000,
+    bonus: 5500,
   },
   {
     // 罗盘：四个方位尖角，墨迹是罗盘上的十字针
@@ -92,7 +92,7 @@ export const LEVELS_B = [
       '.........',
     ],
     goals: [{ type: 'ink' }, { type: 'color', color: 1, n: 26 }],
-    star3: 39000,
+    bonus: 7500,
   },
   {
     id: 'c3-5', name: '风帆', chapterName: C3,
@@ -112,7 +112,7 @@ export const LEVELS_B = [
     ],
     items: { kind: 'silk', total: 6, start: 3, rate: 0.35, max: 3 },
     goals: [{ type: 'worm' }, { type: 'item', item: 'silk', n: 5 }],
-    star3: 201000,
+    bonus: 24000,
   },
   {
     id: 'c3-6', name: '启航', chapterName: C3,
@@ -133,7 +133,7 @@ export const LEVELS_B = [
     ],
     items: { kind: 'silk', total: 6, start: 3, rate: 0.35, max: 3 },
     goals: [{ type: 'rope' }, { type: 'item', item: 'silk', n: 5 }],
-    star3: 288000,
+    bonus: 31000,
   },
   // ------------------------------------------------------------ 第四章 · 琉璃
   {
@@ -143,7 +143,7 @@ export const LEVELS_B = [
     music: 'level', w: 8, h: 9, moves: 24, colors: 4,
     items: { kind: 'glaze', total: 7, start: 3, rate: 0.4, max: 4 },
     goals: [{ type: 'item', item: 'glaze', n: 6 }],
-    star3: 147000,
+    bonus: 21000,
   },
   {
     // 九层塔的剪影：层层出檐
@@ -164,7 +164,7 @@ export const LEVELS_B = [
       '.........',
     ],
     goals: [{ type: 'color', color: 2, n: 36 }, { type: 'color', color: 3, n: 36 }],
-    star3: 42000,
+    bonus: 7500,
   },
   {
     id: 'c4-3', name: '长明', chapterName: C4,
@@ -183,7 +183,7 @@ export const LEVELS_B = [
       '.......',
     ],
     goals: [{ type: 'lamp' }],
-    star3: 48000,
+    bonus: 9000,
   },
   {
     // 每块残瓦下都压着一盏灯
@@ -214,7 +214,7 @@ export const LEVELS_B = [
       '.........',
     ],
     goals: [{ type: 'lamp' }, { type: 'rubble' }],
-    star3: 63000,
+    bonus: 11000,
   },
   {
     id: 'c4-5', name: '九级', chapterName: C4,
@@ -258,6 +258,6 @@ export const LEVELS_B = [
       '.........',
     ],
     goals: [{ type: 'lamp' }, { type: 'rubble' }, { type: 'rope' }],
-    star3: 79000,
+    bonus: 13000,
   },
 ];
